@@ -32,7 +32,7 @@
       stripe
       v-loading="loading"
       style="width: 100%; margin-top: 20px"
-      :header-cell-style="{ background: '#f5f7fa', fontWeight: 'bold' }"
+      :header-cell-style="() => ({ background: '#f5f7fa', fontWeight: 'bold' })"
     >
       <el-table-column prop="id" label="ID" width="80" align="center"/>
       <el-table-column label="短链" width="150">
@@ -75,9 +75,10 @@
       </el-table-column>
       <el-table-column prop="totalPv" label="PV" width="100" align="center"/>
       <el-table-column prop="totalUv" label="UV" width="100" align="center"/>
-      <el-table-column label="操作" width="200" fixed="right" align="center">
+      <el-table-column label="操作" width="120" fixed="right" align="center">
         <template #default="scope">
           <el-button-group v-if="scope.row">
+
             <el-button
               @click="handleEdit(scope.row)"
               type="primary"
@@ -88,19 +89,7 @@
                 <edit/>
               </el-icon>
             </el-button>
-            <el-button
-              @click="handleToggleStatus(scope.row)"
-              :type="scope.row.disabled ? 'success' : 'warning'"
-              size="small"
-              :title="scope.row.disabled ? '启用' : '禁用'"
-            >
-              <el-icon v-if="scope.row.disabled">
 
-              </el-icon>
-              <el-icon v-else>
-
-              </el-icon>
-            </el-button>
             <el-button
               @click="handleDelete(scope.row.id)"
               type="danger"
@@ -143,7 +132,9 @@
         label-position="left"
       >
         <el-form-item label="短链" prop="shortCode">
-          <el-input v-model="form.shortCode">
+          <el-input
+            v-model="form.shortCode"
+            :disabled="!!form.id"> <!-- 编辑模式下禁用 -->
             <template #prepend>{{ baseUrl }}/</template>
           </el-input>
           <div class="form-tip">短链只能包含字母、数字和下划线</div>
@@ -178,10 +169,11 @@
         <el-button type="primary" @click="handleSubmit">提交</el-button>
       </template>
     </el-dialog>
+
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import {ref, onMounted, computed, nextTick} from 'vue'
 import {
   Search, Plus, Edit, Delete, DocumentCopy,
@@ -201,7 +193,7 @@ const currentPage = ref(1)
 const pageSize = ref(10)
 const searchKeyword = ref('')
 const dialogVisible = ref(false)
-const searchTimer = ref(null)
+const searchTimer = ref<number | null>(null)
 
 // 表单数据
 const form = ref({
@@ -313,7 +305,7 @@ const handleEdit = (row) => {
 const handleToggleStatus = async (row) => {
   try {
     const newStatus = {"status": !row.disabled}
-    await toggleStatus(row.ID, newStatus)
+    await toggleStatus(row.id, newStatus)
     row.disabled = newStatus
     ElMessage.success(`已${newStatus ? '禁用' : '启用'}短链`)
   } catch (err) {
@@ -327,7 +319,7 @@ const handleSubmit = async () => {
   formRef.value.validate(async (valid) => {
     if (valid) {
       try {
-        if (form.value.ID) {
+        if (form.value.id) {
           await updateData(form.value)
           ElMessage.success('更新成功')
         } else {
@@ -344,7 +336,7 @@ const handleSubmit = async () => {
 }
 
 // 删除
-const handleDelete = async (id) => {
+const handleDelete = async (id: number) => {
   try {
     await ElMessageBox.confirm('此操作将永久删除该短链，是否继续？', '警告', {
       type: 'warning',
@@ -352,7 +344,7 @@ const handleDelete = async (id) => {
       cancelButtonText: '取消',
       confirmButtonClass: 'el-button--danger',
       center: true
-    })
+    } as any)
 
     await deleteData(id)
     ElMessage.success('删除成功')
@@ -362,7 +354,7 @@ const handleDelete = async (id) => {
       currentPage.value -= 1
     }
 
-    loadData()
+    void loadData()
   } catch (error) {
     // 用户取消删除
   }
@@ -404,10 +396,6 @@ onMounted(() => {
   gap: 10px;
 }
 
-.el-table {
-  --el-table-border-color: #ebeef5;
-  --el-table-header-bg-color: #f5f7fa;
-}
 
 .el-table :deep(.el-table__cell) {
   padding: 12px 0;
@@ -452,12 +440,8 @@ onMounted(() => {
   margin-top: 4px;
 }
 
-.el-button-group {
-  display: flex;
-  gap: 6px;
-}
 
-.el-button + .el-button {
+.el-button + {
   margin-left: 0;
 }
 
@@ -467,18 +451,12 @@ onMounted(() => {
     flex-wrap: wrap;
   }
 
-  .toolbar .el-input {
+  .toolbar {
     width: 100%;
     margin-right: 0;
     margin-bottom: 10px;
   }
 
-  .el-table {
-    font-size: 12px;
-  }
-
-  .el-button {
-    padding: 5px 8px;
-  }
 }
+
 </style>
