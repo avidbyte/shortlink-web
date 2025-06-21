@@ -105,17 +105,18 @@
       </el-table-column>
     </el-table>
 
-    <!-- 分页 -->
-    <el-pagination
-      layout="total, sizes, prev, pager, next"
-      :total="total"
-      :current-page="currentPage"
-      :page-size="pageSize"
-      :page-sizes="[10, 20, 50, 100]"
-      @current-change="handlePageChange"
-      @size-change="handleSizeChange"
-      style="margin-top: 20px; text-align: right"
-    />
+    <div style="margin-top: 20px; display: flex; justify-content: flex-end">
+      <el-pagination
+        layout="total, sizes, prev, pager, next"
+        :total="total"
+        :current-page="currentPage"
+        :page-size="pageSize"
+        :page-sizes="[10, 20, 50, 100]"
+        @current-change="handlePageChange"
+        @size-change="handleSizeChange"
+      />
+    </div>
+
 
     <!-- 新增/编辑弹窗 -->
     <el-dialog
