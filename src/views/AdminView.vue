@@ -137,7 +137,7 @@
             :disabled="!!form.id"> <!-- 编辑模式下禁用 -->
             <template #prepend>{{ baseUrl }}/</template>
           </el-input>
-          <div class="form-tip">短链只能包含字母、数字和下划线</div>
+          <div class="form-tip">短链只能包含字母、数字、下划线、连字符，并可包含多级路径</div>
         </el-form-item>
         <el-form-item label="目标链接" prop="targetUrl">
           <el-input
@@ -210,10 +210,10 @@ const baseUrl = computed(() => window.location.origin)
 // 表单验证规则
 const formRules = {
   shortCode: [
-    {required: true, message: '短链不能为空', trigger: 'blur'},
+    { required: true, message: '短链不能为空', trigger: 'blur' },
     {
-      pattern: /^[a-zA-Z0-9_]+$/,
-      message: '短链只能包含字母、数字和下划线',
+      pattern: /^[a-zA-Z0-9_-]+(\/[a-zA-Z0-9_-]+)*$/,
+      message: '短链只能包含字母、数字、下划线、连字符，并可包含多级路径（例如：abc-123/def_456）',
       trigger: 'blur'
     }
   ],
