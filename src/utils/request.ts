@@ -19,6 +19,14 @@ const service = axios.create({
   withCredentials: false
 })
 
+
+service.interceptors.request.use((config) => {
+  const lang = localStorage.getItem('locale') || 'zh'
+  if (!config.headers) config.headers = {}
+  config.headers['Accept-Language'] = lang
+  return config
+})
+
 // 响应拦截器
 service.interceptors.response.use(
   (response: AxiosResponse<ResponseData>) => {

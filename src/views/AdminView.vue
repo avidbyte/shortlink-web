@@ -68,6 +68,12 @@
           <el-icon><plus /></el-icon>
           新增
         </el-button>
+
+        <!-- 语言切换 -->
+        <el-select v-model="locale" placeholder="语言" style="width: 120px;margin-left: 16px;">
+          <el-option label="中文" value="zh" />
+          <el-option label="English" value="en" />
+        </el-select>
       </div>
     </div>
 
@@ -296,7 +302,6 @@ const loadData = async () => {
     total.value = res?.total || 0
   } catch (err) {
     console.error('加载数据失败:', err)
-    ElMessage.error('请求失败，请稍后再试或检查网络')
     tableData.value = []
     total.value = 0
   } finally {
@@ -358,18 +363,6 @@ const handleEdit = (row) => {
   dialogVisible.value = true
 }
 
-// 切换状态
-const handleToggleStatus = async (row) => {
-  try {
-    const newStatus = {"status": !row.disabled}
-    await toggleStatus(row.id, newStatus)
-    row.disabled = newStatus
-    ElMessage.success(`已${newStatus ? '禁用' : '启用'}短链`)
-  } catch (err) {
-    ElMessage.error('状态切换失败')
-  }
-}
-
 // 提交表单
 const handleSubmit = async () => {
   if (!formRef.value) return
@@ -386,7 +379,7 @@ const handleSubmit = async () => {
         dialogVisible.value = false
         void loadData()
       } catch (err) {
-        ElMessage.error('操作失败，请重试')
+        console.error('创建短链失败:', err)
       }
     }
   })
