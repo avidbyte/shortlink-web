@@ -1,85 +1,80 @@
 <template>
   <div class="table-container">
-
-    <!-- 操作区域 -->
-    <div
-      class="toolbar"
-      style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px"
-    >
-      <!-- 左侧搜索条件 -->
+    <div class="toolbar"
+         style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px">
       <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px;">
-        <!-- 短链关键词 -->
         <el-input
           v-model="searchKeyword"
-          placeholder="请输入短链关键字"
+          :placeholder="t('searchKeywordPlaceholder')"
           clearable
           @keyup.enter.native="handleSearch"
           style="width: 220px"
         >
           <template #suffix>
-            <el-icon class="el-input__icon"><search /></el-icon>
+            <el-icon class="el-input__icon">
+              <search/>
+            </el-icon>
           </template>
         </el-input>
 
-        <!-- 目标URL -->
         <el-input
           v-model="searchTargetUrl"
-          placeholder="请输入目标链接"
+          :placeholder="t('searchTargetUrlPlaceholder')"
           clearable
           @keyup.enter.native="handleSearch"
           style="width: 220px"
         >
           <template #suffix>
-            <el-icon class="el-input__icon"><search /></el-icon>
+            <el-icon class="el-input__icon">
+              <search/>
+            </el-icon>
           </template>
         </el-input>
 
-        <!-- 重定向码 -->
         <el-select
           v-model="searchRedirectCode"
-          placeholder="重定向码"
+          :placeholder="t('redirectCodePlaceholder')"
           clearable
           style="width: 120px"
         >
-          <el-option :label="'301'" :value="301" />
-          <el-option :label="'302'" :value="302" />
-          <el-option :label="'307'" :value="307" />
+          <el-option :label="'301'" :value="301"/>
+          <el-option :label="'302'" :value="302"/>
+          <el-option :label="'307'" :value="307"/>
         </el-select>
 
-        <!-- 状态 -->
         <el-select
           v-model="searchDisabled"
-          placeholder="状态"
+          :placeholder="t('statusPlaceholder')"
           clearable
           style="width: 120px"
         >
-          <el-option :label="'启用'" :value="false" />
-          <el-option :label="'禁用'" :value="true" />
+          <el-option :label="t('statusEnabled')" :value="false"/>
+          <el-option :label="t('statusDisabled')" :value="true"/>
         </el-select>
 
-        <!-- 搜索 / 重置按钮 -->
-        <el-button type="primary" @click="handleSearch" :loading="loading">搜索</el-button>
-        <el-button @click="handleReset">重置</el-button>
+        <el-button type="primary" @click="handleSearch" :loading="loading">{{
+            t('search')
+          }}
+        </el-button>
+        <el-button @click="handleReset">{{ t('reset') }}</el-button>
       </div>
 
-      <!-- 右侧新增按钮 -->
       <div>
         <el-button type="primary" @click="handleAdd">
-          <el-icon><plus /></el-icon>
-          新增
+          <el-icon>
+            <plus/>
+          </el-icon>
+          {{ t('add') }}
         </el-button>
 
-        <!-- 语言切换 -->
-        <el-select v-model="locale" placeholder="语言" style="width: 120px;margin-left: 16px;">
-          <el-option label="中文" value="zh" />
-          <el-option label="English" value="en" />
+        <el-select v-model="locale" :placeholder="t('language')"
+                   style="width: 120px;margin-left: 16px;">
+          <el-option label="中文" value="zh"/>
+          <el-option label="English" value="en"/>
         </el-select>
       </div>
     </div>
 
-
-
-    <!-- 表格 -->
     <el-table
       :data="tableData"
       border
@@ -88,8 +83,8 @@
       style="width: 100%; margin-top: 20px"
       :header-cell-style="() => ({ background: '#f5f7fa', fontWeight: 'bold' })"
     >
-      <el-table-column prop="id" label="ID" width="80" align="center"/>
-      <el-table-column label="短链" width="150">
+      <el-table-column prop="id" :label="t('id')" width="80" align="center"/>
+      <el-table-column :label="t('shortCode')" width="150">
         <template #default="scope">
           <div class="short-url" v-if="scope.row">
             <span>{{ scope.row.shortCode }}</span>
@@ -100,56 +95,40 @@
           </div>
         </template>
       </el-table-column>
-      <el-table-column label="完整短链" width="250">
+      <el-table-column :label="t('fullShortCode')" width="250">
         <template #default="scope">
-          <a
-            v-if="scope.row"
-            :href="`${baseUrl}/${scope.row.shortCode}`"
-            target="_blank"
-            class="full-url"
-          >
+          <a v-if="scope.row" :href="`${baseUrl}/${scope.row.shortCode}`" target="_blank"
+             class="full-url">
             {{ baseUrl }}/{{ scope.row.shortCode }}
           </a>
         </template>
       </el-table-column>
-      <el-table-column label="目标链接">
+      <el-table-column :label="t('targetUrl')">
         <template #default="scope">
-          <div class="target-url" v-if="scope.row">
-            {{ scope.row.targetUrl }}
-          </div>
+          <div class="target-url" v-if="scope.row">{{ scope.row.targetUrl }}</div>
         </template>
       </el-table-column>
-      <el-table-column prop="redirectCode" label="重定向码" width="120" align="center"/>
-      <el-table-column label="状态" width="100" align="center">
+      <el-table-column prop="redirectCode" :label="t('redirectCode')" width="120" align="center"/>
+      <el-table-column :label="t('status')" width="100" align="center">
         <template #default="scope">
           <el-tag v-if="scope.row" :type="scope.row.disabled ? 'danger' : 'success'" effect="dark">
-            {{ scope.row.disabled ? '已禁用' : '启用' }}
+            {{ scope.row.disabled ? t('statusDisabled') : t('statusEnabled') }}
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column prop="totalPv" label="PV" width="100" align="center"/>
-      <el-table-column prop="totalUv" label="UV" width="100" align="center"/>
-      <el-table-column label="操作" width="120" fixed="right" align="center">
+      <el-table-column prop="totalPv" :label="t('pv')" width="100" align="center"/>
+      <el-table-column prop="totalUv" :label="t('uv')" width="100" align="center"/>
+      <el-table-column :label="t('operation')" width="120" fixed="right" align="center">
         <template #default="scope">
           <el-button-group v-if="scope.row">
-
-            <el-button
-              @click="handleEdit(scope.row)"
-              type="primary"
-              size="small"
-              title="编辑"
-            >
+            <el-button @click="handleEdit(scope.row)" type="primary" size="small"
+                       :title="t('edit')">
               <el-icon>
                 <edit/>
               </el-icon>
             </el-button>
-
-            <el-button
-              @click="handleDelete(scope.row.id)"
-              type="danger"
-              size="small"
-              title="删除"
-            >
+            <el-button @click="handleDelete(scope.row.id)" type="danger" size="small"
+                       :title="t('delete')">
               <el-icon>
                 <delete/>
               </el-icon>
@@ -171,11 +150,9 @@
       />
     </div>
 
-
-    <!-- 新增/编辑弹窗 -->
     <el-dialog
       v-model="dialogVisible"
-      :title="form.id ? '编辑短链' : '新增短链'"
+      :title="form.id ? t('dialogTitleEdit') : t('dialogTitleAdd')"
       :close-on-click-modal="false"
       width="600px"
     >
@@ -186,48 +163,45 @@
         ref="formRef"
         label-position="left"
       >
-        <el-form-item label="短链" prop="shortCode">
-          <el-input
-            v-model="form.shortCode"
-            :disabled="!!form.id"> <!-- 编辑模式下禁用 -->
+        <el-form-item :label="t('shortCode')" prop="shortCode">
+          <el-input v-model="form.shortCode" :disabled="!!form.id">
             <template #prepend>{{ baseUrl }}/</template>
           </el-input>
-          <div class="form-tip">短链只能包含字母、数字、下划线、连字符，并可包含多级路径</div>
+          <div class="form-tip">{{ t('formShortCodeInvalid') }}</div>
         </el-form-item>
-        <el-form-item label="目标链接" prop="targetUrl">
+        <el-form-item :label="t('targetUrl')" prop="targetUrl">
           <el-input
             v-model="form.targetUrl"
-            placeholder="请输入完整URL（包含http://或https://）"
+            :placeholder="t('formTargetUrlInvalid')"
             type="textarea"
             :rows="3"
           />
         </el-form-item>
-        <el-form-item label="重定向码" prop="RedirectCode">
+        <el-form-item :label="t('redirectCode')" prop="redirectCode">
           <el-select v-model="form.redirectCode" style="width: 100%">
-            <el-option :value="301" label="301 - 永久重定向"/>
-            <el-option :value="302" label="302 - 临时重定向"/>
-            <el-option :value="307" label="307 - 临时重定向(保持方法)"/>
+            <el-option :value="301" :label="t('redirectCode301')"/>
+            <el-option :value="302" :label="t('redirectCode302')"/>
+            <el-option :value="307" :label="t('redirectCode307')"/>
           </el-select>
         </el-form-item>
-        <el-form-item label="状态" prop="disabled">
+        <el-form-item :label="t('status')" prop="disabled">
           <el-radio-group v-model="form.disabled">
-            <el-radio :label="false">启用</el-radio>
-            <el-radio :label="true">禁用</el-radio>
+            <el-radio :label="false">{{ t('statusEnabled') }}</el-radio>
+            <el-radio :label="true">{{ t('statusDisabled') }}</el-radio>
           </el-radio-group>
         </el-form-item>
-
       </el-form>
+
       <template #footer>
-        <el-button @click="dialogVisible = false">取消</el-button>
-        <el-button type="primary" @click="handleSubmit">提交</el-button>
+        <el-button @click="dialogVisible = false">{{ t('cancel') }}</el-button>
+        <el-button type="primary" @click="handleSubmit">{{ t('submit') }}</el-button>
       </template>
     </el-dialog>
-
   </div>
 </template>
 
 <script setup lang="ts">
-import {ref, onMounted, computed, nextTick} from 'vue'
+import {ref, onMounted, computed, nextTick, watch} from 'vue'
 import {
   Search, Plus, Edit, Delete, DocumentCopy,
 } from '@element-plus/icons-vue'
@@ -235,8 +209,12 @@ import {
   ElMessage, ElMessageBox, ElNotification
 } from 'element-plus'
 import {
-  getTableData, addData, updateData, deleteData, toggleStatus
+  getTableData, addData, updateData, deleteData
 } from '@/api/table.js'
+
+import {useI18n} from 'vue-i18n'
+
+const {t} = useI18n()
 
 // 状态管理
 const loading = ref(true)
@@ -252,7 +230,7 @@ const dialogVisible = ref(false)
 const searchTimer = ref<number | null>(null)
 
 // 表单数据
-const form = ref({
+const form = ref<FormData>({
   id: null,
   shortCode: '',
   targetUrl: '',
@@ -260,16 +238,32 @@ const form = ref({
   disabled: false
 })
 
+interface FormData {
+  id: string | number | null
+  shortCode: string
+  targetUrl: string
+  redirectCode: number
+  disabled: boolean
+}
+
+
 // 获取当前域名
 const baseUrl = computed(() => window.location.origin)
+
+const locale = ref(localStorage.getItem('locale') || 'zh')
+
+watch(locale, (val) => {
+  localStorage.setItem('locale', val)
+  location.reload() // 或 useI18n().locale.value = val（根据是否支持热切换）
+})
 
 // 表单验证规则
 const formRules = {
   shortCode: [
-    { required: true, message: '短链不能为空', trigger: 'blur' },
+    {required: true, message: '短链不能为空', trigger: 'blur'},
     {
       pattern: /^[a-zA-Z0-9_-]+(\/[a-zA-Z0-9_-]+)*$/,
-      message: '短链只能包含字母、数字、下划线、连字符，并可包含多级路径（例如：abc-123/def_456）',
+      message: t('formShortCodeInvalid'),
       trigger: 'blur'
     }
   ],
@@ -277,7 +271,7 @@ const formRules = {
     {required: true, message: '目标链接不能为空', trigger: 'blur'},
     {
       pattern: /^(http|https):\/\/.+$/,
-      message: '请输入有效的URL（以http://或https://开头）',
+      message: t('formTargetUrlInvalid'),
       trigger: 'blur'
     }
   ]
@@ -311,7 +305,9 @@ const loadData = async () => {
 
 // 搜索（带防抖）
 const handleSearch = () => {
-  clearTimeout(searchTimer.value)
+  if (searchTimer.value !== null) {
+    clearTimeout(searchTimer.value)
+  }
   searchTimer.value = setTimeout(() => {
     currentPage.value = 1
     loadData()
@@ -330,13 +326,13 @@ const handleReset = () => {
 
 
 // 分页
-const handlePageChange = (page) => {
+const handlePageChange = (page: number) => {
   currentPage.value = page
   loadData()
 }
 
 // 每页条数变化
-const handleSizeChange = (size) => {
+const handleSizeChange = (size: number) => {
   pageSize.value = size
   currentPage.value = 1
   loadData()
@@ -358,19 +354,22 @@ const handleAdd = () => {
 }
 
 // 编辑
-const handleEdit = (row) => {
+const handleEdit = (row: any) => {
   form.value = {...row}
   dialogVisible.value = true
 }
 
-// 提交表单
+
+
+
 const handleSubmit = async () => {
   if (!formRef.value) return
-  formRef.value.validate(async (valid) => {
+
+  formRef.value.validate(async (valid: boolean) => {
     if (valid) {
       try {
-        if (form.value.id) {
-          await updateData(form.value)
+        if (form.value.id !== null) {
+          await updateData(form.value as { id: string | number } & Record<string, any>)
           ElMessage.success('更新成功')
         } else {
           await addData(form.value)
@@ -384,6 +383,7 @@ const handleSubmit = async () => {
     }
   })
 }
+
 
 // 删除
 const handleDelete = async (id: number) => {
@@ -411,7 +411,7 @@ const handleDelete = async (id: number) => {
 }
 
 // 复制到剪贴板
-const copyToClipboard = (text) => {
+const copyToClipboard = (text: string) => {
   navigator.clipboard.writeText(text).then(() => {
     ElNotification({
       title: '复制成功',

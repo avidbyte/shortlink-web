@@ -1,5 +1,7 @@
 // locales/en.js
 export default {
+  language: 'Language',
+  operation: 'Actions',
   searchKeywordPlaceholder: "Enter short code keyword",
   searchTargetUrlPlaceholder: "Enter target URL",
   redirectCodePlaceholder: "Redirect code",
@@ -32,10 +34,20 @@ export default {
   copySuccessTitle: "Copy successful",
   copySuccessMessage: "Copied short link: {text}",
   copyFailMessage: "Copy failed, please copy manually",
-  requestFailed: "Request failed, please try later or check network",
   updateSuccess: "Updated successfully",
   addSuccess: "Added successfully",
   operationFailed: "Operation failed, please try again",
   toggleStatusSuccess: "{status} short link successfully",
-  toggleStatusFail: "Status toggle failed"
+  toggleStatusFail: "Status toggle failed",
+
+  redirectCode301: "301 - Permanent Redirect",
+  redirectCode302: "302 - Temporary Redirect",
+  redirectCode307: "307 - Temporary Redirect (Preserve Method)",
+
+  requestFailed: 'Request failed. Please try again or check your network.',
+  networkError: 'Network error. Please try again.',
+  requestTimeout: 'Request timeout. Please check your network.',
+  unauthorized: 'Unauthorized. Please login.',
+  notFound: 'Request URL not found.',
+  serverError: 'Internal server error.',
 }

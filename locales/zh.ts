@@ -1,5 +1,7 @@
 // locales/zh.js
 export default {
+  language: "语言",
+  operation: "操作",
   searchKeywordPlaceholder: "请输入短链关键字",
   searchTargetUrlPlaceholder: "请输入目标链接",
   redirectCodePlaceholder: "重定向码",
@@ -32,10 +34,22 @@ export default {
   copySuccessTitle: "复制成功",
   copySuccessMessage: "已复制短链: {text}",
   copyFailMessage: "复制失败，请手动复制",
-  requestFailed: "请求失败，请稍后再试或检查网络",
   updateSuccess: "更新成功",
   addSuccess: "新增成功",
   operationFailed: "操作失败，请重试",
   toggleStatusSuccess: "已{status}短链",
-  toggleStatusFail: "状态切换失败"
+  toggleStatusFail: "状态切换失败",
+
+
+  redirectCode301: "301 - 永久重定向",
+  redirectCode302: "302 - 临时重定向",
+  redirectCode307: "307 - 临时重定向(保持方法)",
+
+
+  requestFailed: '请求失败，请稍后再试或检查网络',
+  networkError: '网络错误，请重试',
+  requestTimeout: '请求超时，请检查网络',
+  unauthorized: '未授权，请登录',
+  notFound: '请求地址不存在',
+  serverError: '服务器内部错误',
 }

@@ -1,10 +1,8 @@
 import axios from 'axios'
-import type { AxiosRequestConfig, AxiosResponse } from 'axios'
+import type { InternalAxiosRequestConfig, AxiosResponse } from 'axios'
 import { ElMessage } from 'element-plus'
+import { i18n } from '@/utils/i18n'
 
-type AxiosRequestConfig = axios.AxiosRequestConfig
-
-// 定义响应数据通用结构（与你的接口返回体匹配）
 interface ResponseData<T = any> {
   success: boolean
   message: string
@@ -12,47 +10,49 @@ interface ResponseData<T = any> {
   timestamp: number
 }
 
-// 创建 axios 实例
 const service = axios.create({
   baseURL: import.meta.env.VITE_API_URL || '/api',
   timeout: 10000,
-  withCredentials: false
+  withCredentials: false,
 })
 
-
-service.interceptors.request.use((config) => {
+service.interceptors.request.use((config: InternalAxiosRequestConfig) => {
   const lang = localStorage.getItem('locale') || 'zh'
-  if (!config.headers) config.headers = {}
-  config.headers['Accept-Language'] = lang
+
+  if (typeof config.headers?.set === 'function') {
+    config.headers.set('Accept-Language', lang)
+  } else if (config.headers) {
+    // 兼容 headers 是普通对象的情况
+    (config.headers as Record<string, string>)['Accept-Language'] = lang
+  }
+
   return config
 })
 
-// 响应拦截器
 service.interceptors.response.use(
   (response: AxiosResponse<ResponseData>) => {
     const res = response.data
-    // ✅ 根据你的接口返回体调整判断逻辑
     if (!res.success) {
-      ElMessage.error(res.message || '请求失败')
+      ElMessage.error(res.message || i18n.global.t('requestFailed'))
       return Promise.reject(new Error(res.message || 'Error'))
     }
-    return res.data // ✅ 直接返回 data 字段（包含分页数据）
+    return res.data
   },
   (error) => {
     console.error('响应拦截错误:', error)
-    let errorMessage = '网络错误，请重试'
+    let errorMessage = i18n.global.t('networkError')
     if (error.code === 'ECONNABORTED') {
-      errorMessage = '请求超时，请检查网络'
+      errorMessage = i18n.global.t('requestTimeout')
     } else if (error.response) {
       switch (error.response.status) {
         case 401:
-          errorMessage = '未授权，请登录'
+          errorMessage = i18n.global.t('unauthorized')
           break
         case 404:
-          errorMessage = '请求地址不存在'
+          errorMessage = i18n.global.t('notFound')
           break
         case 500:
-          errorMessage = '服务器内部错误'
+          errorMessage = i18n.global.t('serverError')
           break
       }
     }
@@ -61,27 +61,18 @@ service.interceptors.response.use(
   }
 )
 
-// 封装通用请求方法
 const request = {
-  get<T = any>(url: string, config?: AxiosRequestConfig<any>): Promise<T> {
-    return service.get(url, config)
+  get<T = any>(url: string, config?: Partial<InternalAxiosRequestConfig>): Promise<T> {
+    return service.get(url, config as InternalAxiosRequestConfig)
   },
-  post<T = any>(
-    url: string,
-    data?: any,
-    config?: AxiosRequestConfig<any>
-  ): Promise<T> {
-    return service.post(url, data, config)
+  post<T = any>(url: string, data?: any, config?: Partial<InternalAxiosRequestConfig>): Promise<T> {
+    return service.post(url, data, config as InternalAxiosRequestConfig)
   },
-  put<T = any>(
-    url: string,
-    data?: any,
-    config?: AxiosRequestConfig<any>
-  ): Promise<T> {
-    return service.put(url, data, config)
+  put<T = any>(url: string, data?: any, config?: Partial<InternalAxiosRequestConfig>): Promise<T> {
+    return service.put(url, data, config as InternalAxiosRequestConfig)
   },
-  delete<T = any>(url: string, config?: AxiosRequestConfig<any>): Promise<T> {
-    return service.delete(url, config)
+  delete<T = any>(url: string, config?: Partial<InternalAxiosRequestConfig>): Promise<T> {
+    return service.delete(url, config as InternalAxiosRequestConfig)
   }
 }
 

@@ -4,19 +4,7 @@ import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 import App from './App.vue'
 import router from './router'
-import { createI18n } from 'vue-i18n'
-import zh from '../locales/zh.js'
-import en from '../locales/en.js'
-
-const messages = { zh, en }
-
-const savedLocale = localStorage.getItem('locale') || 'zh'
-
-const i18n = createI18n({
-  locale: savedLocale,
-  fallbackLocale: 'zh',
-  messages
-})
+import i18n from "@/utils/i18n";
 
 
 // ✅ 导入 Element Plus 及其样式

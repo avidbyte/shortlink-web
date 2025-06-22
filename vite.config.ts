@@ -2,7 +2,7 @@ import { defineConfig, loadEnv } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import { fileURLToPath, URL } from 'node:url'
 
-export default ({ mode }) => {
+export default ({ mode }:{ mode: string }) => {
   // 加载环境变量
   const env = loadEnv(mode, process.cwd(), 'VITE_')
 
@@ -13,6 +13,7 @@ export default ({ mode }) => {
   }
 
   return defineConfig({
+    base: '/admin/',  // 加上这一行，设置静态资源基础路径为 /admin/
     plugins: [vue()],
     define: {
       __APP_ENV__: JSON.stringify(env.VITE_MODE),
