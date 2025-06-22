@@ -1,29 +1,77 @@
 <template>
   <div class="table-container">
+
     <!-- 操作区域 -->
-    <div class="toolbar">
-      <el-input
-        v-model="searchKeyword"
-        placeholder="请输入短链关键字"
-        clearable
-        @input="handleSearch"
-        @clear="handleReset"
-        style="width: 300px; margin-right: 10px"
-      >
-        <template #suffix>
-          <el-icon class="el-input__icon">
-            <search/>
-          </el-icon>
-        </template>
-      </el-input>
-      <el-button @click="handleReset">重置</el-button>
-      <el-button type="primary" @click="handleAdd">
-        <el-icon>
-          <plus/>
-        </el-icon>
-        新增
-      </el-button>
+    <div
+      class="toolbar"
+      style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px"
+    >
+      <!-- 左侧搜索条件 -->
+      <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px;">
+        <!-- 短链关键词 -->
+        <el-input
+          v-model="searchKeyword"
+          placeholder="请输入短链关键字"
+          clearable
+          @keyup.enter.native="handleSearch"
+          style="width: 220px"
+        >
+          <template #suffix>
+            <el-icon class="el-input__icon"><search /></el-icon>
+          </template>
+        </el-input>
+
+        <!-- 目标URL -->
+        <el-input
+          v-model="searchTargetUrl"
+          placeholder="请输入目标链接"
+          clearable
+          @keyup.enter.native="handleSearch"
+          style="width: 220px"
+        >
+          <template #suffix>
+            <el-icon class="el-input__icon"><search /></el-icon>
+          </template>
+        </el-input>
+
+        <!-- 重定向码 -->
+        <el-select
+          v-model="searchRedirectCode"
+          placeholder="重定向码"
+          clearable
+          style="width: 120px"
+        >
+          <el-option :label="'301'" :value="301" />
+          <el-option :label="'302'" :value="302" />
+          <el-option :label="'307'" :value="307" />
+        </el-select>
+
+        <!-- 状态 -->
+        <el-select
+          v-model="searchDisabled"
+          placeholder="状态"
+          clearable
+          style="width: 120px"
+        >
+          <el-option :label="'启用'" :value="false" />
+          <el-option :label="'禁用'" :value="true" />
+        </el-select>
+
+        <!-- 搜索 / 重置按钮 -->
+        <el-button type="primary" @click="handleSearch">搜索</el-button>
+        <el-button @click="handleReset">重置</el-button>
+      </div>
+
+      <!-- 右侧新增按钮 -->
+      <div>
+        <el-button type="primary" @click="handleAdd">
+          <el-icon><plus /></el-icon>
+          新增
+        </el-button>
+      </div>
     </div>
+
+
 
     <!-- 表格 -->
     <el-table
@@ -155,15 +203,13 @@
             <el-option :value="307" label="307 - 临时重定向(保持方法)"/>
           </el-select>
         </el-form-item>
-        <el-form-item label="状态">
-          <el-switch
-            v-model="form.disabled"
-            :active-value="true"
-            :inactive-value="false"
-            active-text="禁用"
-            inactive-text="启用"
-          />
+        <el-form-item label="状态" prop="disabled">
+          <el-radio-group v-model="form.disabled">
+            <el-radio :label="false">启用</el-radio>
+            <el-radio :label="true">禁用</el-radio>
+          </el-radio-group>
         </el-form-item>
+
       </el-form>
       <template #footer>
         <el-button @click="dialogVisible = false">取消</el-button>
@@ -192,7 +238,10 @@ const tableData = ref([])
 const total = ref(0)
 const currentPage = ref(1)
 const pageSize = ref(10)
-const searchKeyword = ref('')
+const searchKeyword = ref<string>('')              // 短链关键词
+const searchTargetUrl = ref<string>('')            // 目标链接
+const searchRedirectCode = ref<number | null>(null) // 重定向码（301、302、307）
+const searchDisabled = ref<boolean | null>(null)   // 状态：true=禁用, false=启用
 const dialogVisible = ref(false)
 const searchTimer = ref<number | null>(null)
 
@@ -238,7 +287,10 @@ const loadData = async () => {
     const res = await getTableData({
       page: currentPage.value,
       size: pageSize.value,
-      shortCode: searchKeyword.value
+      shortCode: searchKeyword.value,
+      targetUrl: searchTargetUrl.value,
+      redirectCode: searchRedirectCode.value,
+      disabled: searchDisabled.value,
     })
     tableData.value = res?.list || []
     total.value = res?.total || 0
@@ -264,9 +316,13 @@ const handleSearch = () => {
 // 重置搜索
 const handleReset = () => {
   searchKeyword.value = ''
+  searchTargetUrl.value = ''
+  searchRedirectCode.value = null
+  searchDisabled.value = null
   currentPage.value = 1
   loadData()
 }
+
 
 // 分页
 const handlePageChange = (page) => {
