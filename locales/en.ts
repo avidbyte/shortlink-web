@@ -23,6 +23,7 @@ export default {
   delete: "Delete",
   cancel: "Cancel",
   submit: "Submit",
+  confirm: "Confirm",
   formShortCodeRequired: "Short code is required",
   formShortCodeInvalid: "Short code can only contain letters, numbers, underscores, hyphens, and support multi-level paths (e.g. abc-123/def_456)",
   formTargetUrlRequired: "Target URL is required",

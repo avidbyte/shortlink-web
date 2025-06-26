@@ -23,6 +23,7 @@ export default {
   delete: "删除",
   cancel: "取消",
   submit: "提交",
+  confirm: "确认",
   formShortCodeRequired: "短链不能为空",
   formShortCodeInvalid: "短链只能包含字母、数字、下划线、连字符，并可包含多级路径（例如：abc-123/def_456）",
   formTargetUrlRequired: "目标链接不能为空",

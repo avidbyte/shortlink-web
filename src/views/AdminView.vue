@@ -260,7 +260,7 @@ watch(locale, (val) => {
 // 表单验证规则
 const formRules = {
   shortCode: [
-    {required: true, message: '短链不能为空', trigger: 'blur'},
+    {required: true, message: t('formShortCodeRequired'), trigger: 'blur'},
     {
       pattern: /^[a-zA-Z0-9_-]+(\/[a-zA-Z0-9_-]+)*$/,
       message: t('formShortCodeInvalid'),
@@ -268,7 +268,7 @@ const formRules = {
     }
   ],
   targetUrl: [
-    {required: true, message: '目标链接不能为空', trigger: 'blur'},
+    {required: true, message: t('formTargetUrlRequired'), trigger: 'blur'},
     {
       pattern: /^(http|https):\/\/.+$/,
       message: t('formTargetUrlInvalid'),
@@ -376,15 +376,16 @@ const handleSubmit = async () => {
             disabled: form.value.disabled,
           };
           await updateData(payload)
-          ElMessage.success('更新成功')
+          ElMessage.success(t('updateSuccess'))
         } else {
           await addData(form.value)
-          ElMessage.success('新增成功')
+          ElMessage.success(t('addSuccess'))
         }
         dialogVisible.value = false
         void loadData()
       } catch (err) {
-        console.error('创建短链失败:', err)
+        ElMessage.error(t('operationFailed'))
+        console.error('operationFailed:', err)
       }
     }
   })
@@ -394,16 +395,21 @@ const handleSubmit = async () => {
 // 删除
 const handleDelete = async (id: number) => {
   try {
-    await ElMessageBox.confirm('此操作将永久删除该短链，是否继续？', '警告', {
-      type: 'warning',
-      confirmButtonText: '确定',
-      cancelButtonText: '取消',
-      confirmButtonClass: 'el-button--danger',
-      center: true
-    } as any)
+    await ElMessageBox.confirm(
+      t('confirmDeleteMessage'),
+      t('confirmDeleteTitle'),
+      {
+        type: 'warning',
+        confirmButtonText: t('confirm'),
+        cancelButtonText: t('cancel'),
+        confirmButtonClass: 'el-button--danger',
+        center: true
+      } as any
+    )
 
     await deleteData(id)
-    ElMessage.success('删除成功')
+
+    ElMessage.success(t('delete') + t('success'))
 
     // 如果当前页最后一条被删除，则回到上一页
     if (tableData.value.length === 1 && currentPage.value > 1) {
@@ -420,14 +426,14 @@ const handleDelete = async (id: number) => {
 const copyToClipboard = (text: string) => {
   navigator.clipboard.writeText(text).then(() => {
     ElNotification({
-      title: '复制成功',
-      message: `已复制短链: ${text}`,
+      title: t('copySuccessTitle'),
+      message: t('copySuccessMessage', { text }),
       type: 'success',
       duration: 2000
     })
   }).catch(err => {
-    console.error('复制失败:', err)
-    ElMessage.error('复制失败，请手动复制')
+    console.error('copyFail:', err)
+    ElMessage.error(t('copyFailMessage'))
   })
 }
 
