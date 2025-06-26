@@ -369,7 +369,13 @@ const handleSubmit = async () => {
     if (valid) {
       try {
         if (form.value.id !== null) {
-          await updateData(form.value as { id: string | number } & Record<string, any>)
+          const payload = {
+            id: form.value.id,
+            targetUrl: form.value.targetUrl,
+            redirectCode: form.value.redirectCode,
+            disabled: form.value.disabled,
+          };
+          await updateData(payload)
           ElMessage.success('更新成功')
         } else {
           await addData(form.value)
@@ -490,10 +496,6 @@ onMounted(() => {
   margin-top: 4px;
 }
 
-
-.el-button + {
-  margin-left: 0;
-}
 
 /* 响应式调整 */
 @media (max-width: 768px) {

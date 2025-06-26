@@ -12,8 +12,8 @@ export function addData(data: Record<string, any>): Promise<any> {
 }
 
 // 更新数据2
-export function updateData(data: { id: string | number } & Record<string, any>): Promise<any> {
-  return request.put(`/shortlink/${data.id}`, data)
+export function updateData(data:Record<string, any>): Promise<any> {
+  return request.put(`/shortlink`, data)
 }
 
 // 删除数据
