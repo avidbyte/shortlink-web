@@ -35,7 +35,7 @@
           v-model="searchRedirectCode"
           :placeholder="t('redirectCodePlaceholder')"
           clearable
-          style="width: 120px"
+          style="width: 150px"
         >
           <el-option :label="'301'" :value="301"/>
           <el-option :label="'302'" :value="302"/>
@@ -108,7 +108,7 @@
           <div class="target-url" v-if="scope.row">{{ scope.row.targetUrl }}</div>
         </template>
       </el-table-column>
-      <el-table-column prop="redirectCode" :label="t('redirectCode')" width="120" align="center"/>
+      <el-table-column prop="redirectCode" :label="t('redirectCode')" width="150" align="center"/>
       <el-table-column :label="t('status')" width="100" align="center">
         <template #default="scope">
           <el-tag v-if="scope.row" :type="scope.row.disabled ? 'danger' : 'success'" effect="dark">
