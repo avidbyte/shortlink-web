@@ -384,7 +384,6 @@ const handleSubmit = async () => {
         dialogVisible.value = false
         void loadData()
       } catch (err) {
-        ElMessage.error(t('operationFailed'))
         console.error('operationFailed:', err)
       }
     }

@@ -24,6 +24,7 @@ export default {
   cancel: "取消",
   submit: "提交",
   confirm: "确认",
+  success: "成功",
   formShortCodeRequired: "短链不能为空",
   formShortCodeInvalid: "短链只能包含字母、数字、下划线、连字符，并可包含多级路径（例如：abc-123/def_456）",
   formTargetUrlRequired: "目标链接不能为空",
@@ -52,5 +53,6 @@ export default {
   requestTimeout: '请求超时，请检查网络',
   unauthorized: '未授权，请登录',
   notFound: '请求地址不存在',
+  conflict: '资源已存在',
   serverError: '服务器内部错误',
 }

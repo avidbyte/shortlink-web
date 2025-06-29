@@ -45,6 +45,9 @@ service.interceptors.response.use(
       errorMessage = i18n.global.t('requestTimeout')
     } else if (error.response) {
       switch (error.response.status) {
+        case 409:
+          errorMessage = i18n.global.t('conflict')
+          break
         case 401:
           errorMessage = i18n.global.t('unauthorized')
           break
