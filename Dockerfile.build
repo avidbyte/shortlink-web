@@ -1,0 +1,10 @@
+# Dockerfile.build
+
+FROM node:22 as builder
+WORKDIR /app
+COPY . .
+RUN npm install && npm run build
+
+FROM alpine
+WORKDIR /dist
+COPY --from=builder /app/dist .
